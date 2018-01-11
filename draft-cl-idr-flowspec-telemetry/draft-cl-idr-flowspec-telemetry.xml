@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This template is for creating anInternet Draft using xml2rfc, which is available here: http://xml.resource.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [ <!-- One method to get references from theonline citation libraries. There has to be one entity for each item to bereferenced. An alternate method (rfc include) is described in the references. -->
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC2629 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2629.xml">
+<!ENTITY RFC3552 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3552.xml">
+<!ENTITY RFC5226 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5226.xml">
+<!ENTITY RFC5575 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5575.xml">
+<!ENTITY RFC7011 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7011.xml">
+<!ENTITY I-D.ietf-netconf-restconf-notif SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-netconf-restconf-notif.xml">
+<!ENTITY I-D.wu-idr-flowspec-yang-cfg SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.wu-idr-flowspec-yang-cfg.xml">
+<!ENTITY I-D.ietf-netconf-subscribed-notifications SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-netconf-subscribed-notifications.xml">]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLTprocessors -->
+<!-- For a complete list and description of processinginstructions (PIs), please see http://xml.resource.org/authoring/README.html. -->
+<!--Below are generally applicable Processing Instructions (PIs) that most I-Dsmight want to use. (Here they are set differently than their defaults in xml2rfcv1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTDvalidation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes" ?>
+<!--generate a ToC -->
+<?rfc tocdepth="4" ?>
+<!-- the number of levels of subsectionsin ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes" ?>
+<!--use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!--control vertical white space (using these PIs as follows is recommended by theRFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on anew page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between listitems -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc category="std" docName="draft-cl-idr-flowspec-telemetry-00" ipr="trust200902">
+  <!--category values: std, bcp, info, exp, and historic ipr values:
+  trust200902,noModificationTrust200902, noDerivativesTrust200902, or
+  pre5378Trust200902 youcan add the attributes updates="NNNN" and
+  obsoletes="NNNN" they willautomatically be output with "(if approved)" -->
+  <!-- ***** FRONT MATTER ***** -->
+  <front>
+    <!-- The abbreviated title is used in the page header - it is only necessary
+    if the full title is longer than 39 characters -->
+    <title abbrev="Flowspec Telemetry">
+      Telemetry Data Streaming for BGP FlowSpec
+    </title>
+    <!-- add 'role="editor"' below for the editors if appropriate -->
+    <!-- Another author who claims to be an editor -->
+    <author   fullname="Christoph Loibl" initials="C.L." surname="Loibl">
+      <organization>Next Layer Communications</organization>
+      <address>
+        <postal>
+          <street>Mariahilfer Guertel 37/7</street>
+          <city>Vienna</city>
+          <region>
+          </region>
+          <code>1150</code>
+          <country>AT</country>
+        </postal>
+        <phone>+43 664 1176414</phone>
+        <email>cl@tix.at</email>
+      </address>
+    </author>
+    <author fullname="Kirill Kasavchenko" initials="K.K." surname="Kasavchenko">
+      <organization>Arbor Networks</organization>
+      <address>
+        <postal>
+          <street>Agnes-Pockels-Bogen 1</street>
+          <city>Munich</city>
+          <region>
+          </region>
+          <code>80992</code>
+          <country>DE</country>
+        </postal>
+        <phone>+49 6174 6194670</phone>
+        <email>kkasavchenko@arbor.net</email>
+      </address>
+    </author>
+    <date year="2018" />
+    <!-- Meta-data Declarations -->
+    <area>Routing Area</area>
+    <workgroup>IDR Working Group</workgroup>
+    <!-- WG name at the upperleft corner of the doc, IETF is fine for individual
+    submissions. If this element is not present, the default is "Network Working
+    Group", which is used by the RFC Editor as a nod to the history of the IETF. -->
+    <keyword>RFC</keyword>
+    <keyword>Request for Comments</keyword>
+    <keyword>Flowspec</keyword>
+    <keyword>I-D</keyword>
+    <keyword>Internet-Draft</keyword>
+    <!-- Keywords will be incorporated        into HTML output files in a meta
+    tag but they have no effect on text or        nroff output. If you submit
+    your draft to the RFC Editor, the keywords        will be used for the
+    search engine. -->
+    <abstract>
+      <t>
+        This document describes an architecture that enables originators of flow
+        specification rules as described in <xref target="RFC5575" /> to receive
+        telemetry feedback on packets matching the announced flows. It solves
+        one of the major problems (non-existent feedback loop between the
+        originator of a Flowspec rule and the network where the rule is
+        applied) for operators using BGP Flowspec.
+      </t>
+    </abstract>
+  </front>
+  <middle>
+    <section title="Introduction">
+      <t>
+        This document describes an architecture that enables originators of flow
+        specification rules as described in <xref target="RFC5575" /> to receive
+        telemetry feedback on packets matching the announced flows. It solves
+        one of the major problems (non-existent feedback loop between the
+        originator of a Flowspec rule and the network where the rule is applied)
+        for operators using BGP Flowspec.
+      </t>
+      <t>
+        <xref target="RFC5575" /> defines a BGP NLRI that enables BGP speakers
+        to exchange flow filters (match conditions) together with flow-actions
+        via BGP. The exchanged flow filters are applied to the forwarding path
+        and may modify the forwarding behaviour of packets matching the flow
+        filters. One major application of BGP Flowspec is DDoS mitigation.
+      </t>
+      <t>
+        The absence of feedback loop is one of the major blockers for
+        Inter-AS DDoS mitigation. Currently the originator of a Flowspec filter
+        has no standardized way of receiving any statistical feedback from the
+        network regarding matching packets for the originated filters. This is
+        especially problematic if Flowspec filters are exchanged between
+        different autonomous systems. Currently there exist few approaches to
+        gather telemetry for FlowSpec filters.  In some implementations per flow
+        specification counters can be polled using CLI or SNMP or Netconf.
+        Another approach is to export traffic statistics using flow-based
+        telemetry like IPFIX defined in <xref target="RFC7011" /> where traffic
+        flows dropped with FlowSpec have SNMP index of egress interface set to
+        0. Both approaches have very limited application in Inter-AS use cases.
+      </t>
+      <t>
+        This document defines an architecture thats allows a network originating
+        Flowspec filters to receive telemetry data for its announcements. When a
+        originator of a Flowspec filter wants to receive telemetry for a filter
+        it adds a BGP extended community to the filter announcement. This
+        extended community encodes the destination for telemetry streaming. Upon
+        receiving this extended community network devices establish a restconf
+        HTTP2 session as described in <xref
+        target="I-D.ietf-netconf-restconf-notif"/> with a static predefined
+        subscription for the announced Flowspec filters for telemetry streaming.
+        The telemetry data can then be streamed as HTTP POST requests from the
+        network element to the remote originator (or any NMS) of the Flowspec
+        filter. The datamodel for data streaming is described in <xref
+        target="I-D.wu-idr-flowspec-yang-cfg"/>.
+      </t>
+      <section title="Requirements Language">
+        <t>
+            The key words "MUST", "MUST     NOT", "REQUIRED", "SHALL", "SHALL
+            NOT", "SHOULD", "SHOULD NOT",     "RECOMMENDED", "MAY", and
+            "OPTIONAL" in this document are to be interpreted     as described
+            in <xref target="RFC2119">RFC 2119</xref>.
+        </t>
+      </section>
+    </section>
+    <section anchor="sec_requeststreaming" title="Requesting Telemetry   Streaming">
+      <t>
+        A BGP implementation that requests Flowspec telemetry   streaming
+        MUST attach the Flowspec Telemetry Streaming BGP extended community   to
+        the announcement. This extended community is defined as transitive
+        across   an Autonomous System (AS) boundary and is encoded as shown in
+        figure <xref   target="fsts_com" />.
+      </t>
+      <t>
+        <figure title="Flowspec Telemetry Streaming   extended community" anchor="fsts_com">
+          <artwork>
+   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  | TBD Type      | TBD Sub-Type  | Telemetry Receiver IPv4-Addr  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-------------------------------+
+  | T. Receiver IPv4-Addr(cont.)  | T. Receiver TCP-Port          |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+          </artwork>
+        </figure>
+      </t>
+      <t>
+        <list style="symbols">
+          <t>
+            TBD Type: IANA assigned type for the Telemetry Streaming extended
+            community.
+          </t>
+          <t>
+            TBD Sub-Type: IANA assigned sub-type for the Telemetry Streaming
+            extended community.
+          </t>
+          <t>
+            Telemetry receiver IPv4-Address: 4-octets IPv4 address of   the
+            Telemetry Receiver. The IP address is not necessarily the IP address
+            of the originator of the Flowspec rule.
+          </t>
+          <t>
+            Telemetry receiver TCP-Port: 2-octets TCP port number of the
+            Telemetry Receiver.
+          </t>
+        </list>
+      </t>
+      <t>
+        It is possible that more then a single entity is interested in Flowspec
+        telemetry data for a specific Flowspec filter. Multiple Flowspec
+        Telemetry Streaming extended communities may be associated with a single
+        Flowspec filter.
+      </t>
+      <t>
+        Note on interference with Flowspec action communities:   <vspace
+        blankLines="1" /> The BGP extended community is propagated together
+        with the Flowspec NLRI via BGP. It does not interfere with any of the
+        Flowspec action communities defined in <xref target="RFC5575" />.
+      </t>
+    </section>
+    <section anchor="sec_network_element" title="Flowspec Telemetry   Publisher">
+      <t>
+        A network device that installs a Flowspec filter in the forwarding
+        path that has a Telemetry Request Community attached MUST initiate   a
+        configured subscription over HTTP2 as described in <xref
+        target="I-D.ietf-netconf-restconf-notif"/> Section 3.1.3 for restconf
+        telemetry data streaming. Its role is a Flowspec Telemetry Publisher.
+        The destination IP address and destination TCP port of the telemetry
+        receiver is encoded in the extended community (see <xref
+        target="sec_requeststreaming" />).
+      </t>
+      <t>
+        Multiple Flowspec filters may share the same telemetry receiver   (same
+        IP-address AND same TCP port). Only a single streaming connection to
+        each streaming receiver SHOULD be established and used for all telemetry
+        data for that particular receiver.
+      </t>
+      <t>
+        When a streaming connection is not in use anymore (no more Telemetry
+        Requests with a particular telemetry receiver) it MUST be closed. An
+        optional teardown delay may be introduced in order to allow a reuse
+        for telemetry streaming.
+      </t>
+      <t>
+        It is acceptable that the streaming connection is delayed until actual
+        data can be sent (ie. counters of matched packets are not 0). In many
+        deployments it may not be possible for a network device to directly
+        connect to a remote restconf receiver. An optional outbound HTTP2 proxy
+        server SHOULD be configurable on the network device.
+      </t>
+    </section>
+    <section anchor="sec_subscription" title="Flowspec   Telemetry Subscription">
+      <t>
+        After successful session setup (see <xref
+        target="sec_network_element"/>) the Telemetry Receiver is subscribed by
+        the   Telemetry Publisher to periodic updates on the selected subtrees
+        within the Flowspec YANG datamodel <xref
+        target="I-D.wu-idr-flowspec-yang-cfg"/>. The update rate SHALL be
+        configurable on the Telemetry Publisher and the default interval SHOULD
+        be 300 seconds. The path to the published subtrees within YANG module
+        ietf-flowspec is:
+        <vspace blankLines="1" />
+        /flowspec/flowspec-state/flowspec-statistics/flowspec-stats/flowspec-rule-stats
+        <vspace blankLines="1" />
+        In case of multiple Flowspec NLRIs requesting Telemetry streaming to the
+        same Telemetry Receiver this receiver gets subscribed not only to a
+        single entry in the flowspec-rule-stats subtree but to every item that
+        it requested streaming for.
+      </t>
+      <t>
+        After session setup an initial subscription-started message is sent to
+        the Telemetry Receiver. An example can be found in <xref
+        target="I-D.ietf-netconf-restconf-notif"/> Section 3.1.3. During the
+        livetime of a Telemetry session, changes in the Flowspec NLRIs on the
+        Telemetry Publisher may lead to subscription changes. Successive changes
+        to the subscription are handled as configured-subscriptions explained in
+        <xref target="I-D.ietf-netconf-subscribed-notifications"/> Section 5.
+      </t>
+    </section>
+    <section anchor="Acknowledgements" title="Acknowledgements">
+      <t>
+      </t>
+    </section>
+    <!-- Possibly a 'Contributors' section ... -->
+    <section anchor="IANA" title="IANA Considerations">
+      <t>
+        IANA needs to assign a codepoint for the Telemetry Streaming Request
+        extended community.
+      </t>
+    </section>
+    <section anchor="Security" title="Security Considerations">
+      <t>
+        The IP address and TCP port of the Telemetry Receiver is popagated via
+        BGP update   messages over the entire Flowspec domain. The Telemetry
+        Receiver needs to be   accessed from the entire Flowspec domain. The
+        Telemetry Receiver is unable to   verify to Telemetry Publisher and thus
+        needs to accept every incoming session.
+      </t>
+    </section>
+  </middle>
+  <!--  *****BACK MATTER ***** -->
+  <back>
+      <!-- References split into informative and normative --> <!-- There are 2
+      ways to insert reference entries from the citation   libraries: 1. define
+      an ENTITY at the top, and use "ampersand   character"RFC2629; here (as
+      shown) 2. simply use a PI "less than   character"?rfc
+      include="reference.RFC.2119.xml"?> here (for I-Ds:
+      include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")    Both
+      are cited textually in the same manner: by using xref elements. If you
+      use the PI option, xml2rfc will, by default, try to find included files in
+      the same directory as the including file. You can also define the
+      XML_LIBRARY environment variable with a value containing a set of
+      directories to search.  These can be either in the local filing system or
+      remote ones accessed by http (http://domain/dir/... ).-->
+    <references title="Normative References">
+      <!--?rfc
+      include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml"?-->
+      &RFC2119;
+    </references>
+    <references title="Informative References">
+          <!-- Here   we use entities that we defined at the beginning. -->
+      &I-D.wu-idr-flowspec-yang-cfg;
+      &I-D.ietf-netconf-restconf-notif;
+      &I-D.ietf-netconf-subscribed-notifications; &RFC5575; &RFC7011;
+    </references>
+  </back>
+</rfc>
