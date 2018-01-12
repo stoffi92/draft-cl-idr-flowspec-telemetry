@@ -127,7 +127,7 @@
         network regarding matching packets for the originated filters. This is
         especially problematic if Flowspec filters are exchanged between
         different autonomous systems. Currently there exist few approaches to
-        gather telemetry for FlowSpec filters.  In some implementations per flow
+        gather telemetry for FlowSpec filters. In some implementations per flow
         specification counters can be polled using CLI or SNMP or Netconf.
         Another approach is to export traffic statistics using flow-based
         telemetry like IPFIX defined in <xref target="RFC7011" /> where traffic
@@ -151,23 +151,23 @@
       </t>
       <section title="Requirements Language">
         <t>
-            The key words "MUST", "MUST     NOT", "REQUIRED", "SHALL", "SHALL
-            NOT", "SHOULD", "SHOULD NOT",     "RECOMMENDED", "MAY", and
-            "OPTIONAL" in this document are to be interpreted     as described
+            The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+            NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
+            "OPTIONAL" in this document are to be interpreted as described
             in <xref target="RFC2119">RFC 2119</xref>.
         </t>
       </section>
     </section>
-    <section anchor="sec_requeststreaming" title="Requesting Telemetry   Streaming">
+    <section anchor="sec_requeststreaming" title="Requesting Telemetry Streaming">
       <t>
-        A BGP implementation that requests Flowspec telemetry   streaming
-        MUST attach the Flowspec Telemetry Streaming BGP extended community   to
+        A BGP implementation that requests Flowspec telemetry streaming
+        MUST attach the Flowspec Telemetry Streaming BGP extended community to
         the announcement. This extended community is defined as transitive
-        across   an Autonomous System (AS) boundary and is encoded as shown in
-        figure <xref   target="fsts_com" />.
+        across an Autonomous System (AS) boundary and is encoded as shown in
+        figure <xref target="fsts_com" />.
       </t>
       <t>
-        <figure title="Flowspec Telemetry Streaming   extended community" anchor="fsts_com">
+        <figure title="Flowspec Telemetry Streaming extended community" anchor="fsts_com">
           <artwork>
    0                   1                   2                   3
    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -190,7 +190,7 @@
             extended community.
           </t>
           <t>
-            Telemetry receiver IPv4-Address: 4-octets IPv4 address of   the
+            Telemetry receiver IPv4-Address: 4-octets IPv4 address of the
             Telemetry Receiver. The IP address is not necessarily the IP address
             of the originator of the Flowspec rule.
           </t>
@@ -207,16 +207,16 @@
         Flowspec filter.
       </t>
       <t>
-        Note on interference with Flowspec action communities:   <vspace
+        Note on interference with Flowspec action communities: <vspace
         blankLines="1" /> The BGP extended community is propagated together
         with the Flowspec NLRI via BGP. It does not interfere with any of the
         Flowspec action communities defined in <xref target="RFC5575" />.
       </t>
     </section>
-    <section anchor="sec_network_element" title="Flowspec Telemetry   Publisher">
+    <section anchor="sec_network_element" title="Flowspec Telemetry Publisher">
       <t>
         A network device that installs a Flowspec filter in the forwarding
-        path that has a Telemetry Request Community attached MUST initiate   a
+        path that has a Telemetry Request Community attached MUST initiate a
         configured subscription over HTTP2 as described in <xref
         target="I-D.ietf-netconf-restconf-notif"/> Section 3.1.3 for restconf
         telemetry data streaming. Its role is a Flowspec Telemetry Publisher.
@@ -225,7 +225,7 @@
         target="sec_requeststreaming" />).
       </t>
       <t>
-        Multiple Flowspec filters may share the same telemetry receiver   (same
+        Multiple Flowspec filters may share the same telemetry receiver (same
         IP-address AND same TCP port). Only a single streaming connection to
         each streaming receiver SHOULD be established and used for all telemetry
         data for that particular receiver.
@@ -244,11 +244,11 @@
         server SHOULD be configurable on the network device.
       </t>
     </section>
-    <section anchor="sec_subscription" title="Flowspec   Telemetry Subscription">
+    <section anchor="sec_subscription" title="Flowspec Telemetry Subscription">
       <t>
         After successful session setup (see <xref
         target="sec_network_element"/>) the Telemetry Receiver is subscribed by
-        the   Telemetry Publisher to periodic updates on the selected subtrees
+        the Telemetry Publisher to periodic updates on the selected subtrees
         within the Flowspec YANG datamodel <xref
         target="I-D.wu-idr-flowspec-yang-cfg"/>. The update rate SHALL be
         configurable on the Telemetry Publisher and the default interval SHOULD
@@ -286,9 +286,9 @@
     <section anchor="Security" title="Security Considerations">
       <t>
         The IP address and TCP port of the Telemetry Receiver is popagated via
-        BGP update   messages over the entire Flowspec domain. The Telemetry
-        Receiver needs to be   accessed from the entire Flowspec domain. The
-        Telemetry Receiver is unable to   verify to Telemetry Publisher and thus
+        BGP update messages over the entire Flowspec domain. The Telemetry
+        Receiver needs to be accessed from the entire Flowspec domain. The
+        Telemetry Receiver is unable to verify to Telemetry Publisher and thus
         needs to accept every incoming session.
       </t>
     </section>
